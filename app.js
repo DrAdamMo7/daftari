@@ -34,7 +34,17 @@ index(){const h=S.hero||(D.images[0]||{}).src;const of=(D.offers||[]).filter(o=>
  ${(D.images||[]).length?`<section><h2 class="t"><span>صور من التطبيق</span></h2><br>${gal()}</section>`:''}
  <section><h2 class="t"><span>آراء المستخدمين</span></h2><br>${revs(rv)}<p><a class="btn ghost" href="reviews.html">كل الآراء</a></p></section>`},
 features(){$('#main').innerHTML=head('المزايا',S.intro)+feats(D.features||[])+board()},
-download(){$('#main').innerHTML=head('التحميل',S.install)+(D.versions||[]).map(v=>`<div class="paper ver reveal"><div><b>النسخة ${E(v.version)}</b>${v.version==D.latest?'<span class="tag">الأحدث</span>':''}<br><small>${E(v.date)}${v.size?' - '+E(v.size):''}</small><p>${E(v.notes)}</p></div><a class="btn ${v.version==D.latest?'':'ghost'}" href="${E(v.url)}" download>تحميل</a></div>`).join('')},
+download(){
+ const plat=(id,t,sub,body)=>`<section class="plat" id="${id}"><h2 class="t"><span>${t}</span></h2><p class="lead">${sub}</p>${body}</section>`;
+ const steps=l=>`<div class="steps">${l.map(([t,x,i],n)=>`<div class="paper step reveal"><img src="${i}" alt=""><h3>${n+1}. ${E(t)}</h3><p>${E(x)}</p></div>`).join('')}</div>`;
+ const web=(u,t)=>u?`<p><a class="btn" href="${U(u)}" target="_blank" rel="noopener">${t}</a></p>`:'<p class="lead">الرابط قريباً</p>';
+ const IOS=[['افتح الرابط في Safari','افتح رابط التطبيق من متصفح Safari، ثم اضغط زر المشاركة أسفل الشاشة.','assets/ios-1.svg'],['أضف إلى الشاشة الرئيسية','مرر القائمة للأسفل واختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).','assets/ios-2.svg'],['افتح دفتري','اضغط "إضافة"، وبتلاقي أيقونة دفتري بين تطبيقاتك وتفتح بشاشة كاملة.','assets/ios-3.svg']];
+ const PC=[['افتح الرابط في Chrome أو Edge','بتظهر أيقونة التثبيت على يمين شريط العنوان، اضغط عليها ثم "تثبيت".','assets/pc-1.svg'],['افتح دفتري','بيفتح التطبيق بنافذة مستقلة، وبتلاقي أيقونته في شريط المهام وقائمة ابدأ.','assets/pc-2.svg']];
+ const apk=(D.versions||[]).map(v=>`<div class="paper ver reveal"><div><b>النسخة ${E(v.version)}</b>${v.version==D.latest?'<span class="tag">الأحدث</span>':''}<br><small>${E(v.date)}${v.size?' - '+E(v.size):''}</small><p>${E(v.notes)}</p></div><a class="btn ${v.version==D.latest?'':'ghost'}" href="${E(v.url)}" download>تحميل</a></div>`).join('');
+ $('#main').innerHTML=head('التحميل',S.install)+`<p class="pills"><a class="btn ghost" href="#android">أندرويد</a><a class="btn ghost" href="#iphone">ايفون</a><a class="btn ghost" href="#pc">كمبيوتر</a></p>`
+ +plat('android','أندرويد','ملف APK، حمّله وثبّته مباشرة.',apk)
+ +plat('iphone','ايفون','تطبيق ويب بيتثبت على الشاشة الرئيسية بدون App Store.',web(S.iosUrl,'افتح التطبيق على الايفون')+steps(IOS)+'<p class="note">لازم تفتح الرابط من Safari حتى يظهر خيار الإضافة.</p>')
+ +plat('pc','كمبيوتر','تطبيق ويب بيتثبت كبرنامج على ويندوز وماك.',web(S.pcUrl,'افتح التطبيق على الكمبيوتر')+steps(PC)+'<p class="note">بيشتغل على Chrome وEdge.</p>')},
 reviews(){$('#main').innerHTML=head('آراء المستخدمين')+revs(RV)+`<section><h2 class="t"><span>رأيك يهمنا</span></h2><br>${form()}</section>`;fb()},
 about(){$('#main').innerHTML=doc('من نحن',S.about)+`<div class="paper prose"><h3>ما هو دفتري؟</h3>${P(S.intro)}</div>`},
 contact(){const O=D.owner||{};$('#main').innerHTML=head('تواصل معنا')+`<div class="grid"><div class="paper"><h3>${E(O.name)}</h3><p><a href="tel:${E(O.phone)}">${E(O.phone)}</a></p><p><a href="https://instagram.com/${E(O.instagram)}" target="_blank" rel="noopener">انستغرام: ${E(O.instagram)}</a></p></div>
