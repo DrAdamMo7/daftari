@@ -1,3 +1,4 @@
+/* daftari v3 */
 const $=s=>document.querySelector(s),E=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const P=t=>String(t||'').split(/\n+/).filter(Boolean).map(p=>`<p>${E(p)}</p>`).join('');
 const U=u=>/^(https?:|tel:|mailto:)/.test(u)?E(u):'#';
@@ -62,7 +63,7 @@ async function boot(){const O=D.owner||{},A=D.accounts||[];
  <div><h4>روابط</h4><p><a href="about.html">من نحن</a></p><p><a href="privacy.html">سياسة الخصوصية</a></p><p><a href="terms.html">الشروط والأحكام</a></p></div></div>
  <div class="wrap cp">${E(S.rights)}</div></footer>`;
  RV=(D.reviews||[]).filter(r=>r.show!==false);if(FBC()&&(PG=='index'||PG=='reviews')){try{RV=RV.concat(await fsRev())}catch(e){}}
- R[PG]&&R[PG]();initBoard();
+ try{R[PG]&&R[PG]();initBoard()}catch(e){$('#main').innerHTML='<p class="lead">حدث خطأ في عرض الصفحة: '+E(e.message)+'</p>'}
  const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:.12});
  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
  if(PG=='index')intro()}
