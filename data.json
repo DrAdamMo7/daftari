@@ -91,6 +91,13 @@
     }
   ],
   "versions": [],
-  "reviews": [],
+  "reviews": [
+    {
+      "name": "شييس",
+      "rating": 5,
+      "text": "شسيش",
+      "show": true
+    }
+  ],
   "firebase": {}
 }
