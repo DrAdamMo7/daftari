@@ -1,10 +1,24 @@
 {
-  "github": {"owner": "DrAdamMo7", "repo": "daftari"},
+  "github": {
+    "owner": "DrAdamMo7",
+    "repo": "daftari"
+  },
   "latest": "1.8",
   "offers": [
-    {"title": "إطلاق النسخة 1.8", "text": "حمّل دفتري الآن مجاناً واكتب فوق ملفاتك بحرية.", "ends": "", "active": true}
+    {
+      "title": "إطلاق النسخة 1.88",
+      "text": "حمّل دفتري الآن مجاناً واكتب فوق ملفاتك بحرية.",
+      "ends": "",
+      "active": true
+    }
   ],
   "versions": [
-    {"version": "1.8", "date": "2026-11-16", "notes": "النسخة الحالية من دفتري.", "url": "downloads/daftari-1.8.apk", "size": "0.9 MB"}
+    {
+      "version": "1.8",
+      "date": "2026-11-16",
+      "notes": "النسخة الحالية من دفتري.",
+      "url": "downloads/daftari-1.8.apk",
+      "size": "0.9 MB"
+    }
   ]
 }
