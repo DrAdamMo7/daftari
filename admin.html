@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>لوحة تحكم دفتري</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;font-family:Cairo,Tahoma,sans-serif;background:#06223a;color:#eaf8fc;line-height:1.7}
+.w{max-width:900px;margin:auto;padding:20px}h1{margin:0 0 4px}h2{color:#fbbf24;margin:0 0 10px;font-size:1.2rem}
+.c{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:18px;margin:16px 0}
+input,textarea{font:inherit;color:inherit;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;width:100%;margin:4px 0}
+label{font-size:.85rem;color:#9fc6d4}.r{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 20px;cursor:pointer;background:#22c8e4;color:#02202f;margin:6px 4px 0 0}
+button.x{background:#7a2330;color:#fff}button.g{background:none;border:1px solid rgba(255,255,255,.25);color:#eaf8fc}
+.it{border:1px dashed rgba(255,255,255,.2);border-radius:12px;padding:12px;margin:10px 0}
+#st{position:sticky;top:0;background:#0a3a57;padding:8px 14px;border-radius:10px;min-height:38px}small{color:#9fc6d4}
+</style></head><body><div class="w">
+<h1>لوحة تحكم دفتري</h1><small>التعديلات بتنحفظ مباشرة في ملف data.json داخل مستودع GitHub.</small>
+<div id="st">جاهز</div>
+
+<div class="c"><h2>الاتصال</h2>
+<div class="r"><div><label>اسم المستخدم</label><input id="o"></div><div><label>اسم المستودع</label><input id="rp" value="daftari"></div>
+<div><label>التوكن (Personal Access Token)</label><input id="t" type="password" autocomplete="off"></div></div>
+<small>التوكن بيبقى بمتصفحك فقط خلال الجلسة ولا ينحفظ في الموقع. صلاحية Contents: Read and write على هذا المستودع بس.</small><br>
+<button onclick="load()">تحميل البيانات</button></div>
+
+<div id="app" hidden>
+<div class="c"><h2>العروض</h2><div id="of"></div><button class="g" onclick="addO()">إضافة عرض</button></div>
+<div class="c"><h2>النسخ والتحميلات</h2><label>النسخة الأحدث (رقم)</label><input id="lt"><div id="vs"></div>
+<button class="g" onclick="addV()">إضافة نسخة</button>
+<div class="it"><label>رفع ملف APK جديد (بيروح لمجلد downloads)</label><input type="file" id="f" accept=".apk"><button onclick="up()">رفع الملف</button></div></div>
+<button onclick="save()" style="font-size:1.05rem">حفظ كل التغييرات</button>
+<div class="c"><h2>آراء الزوار</h2><div id="fbk"><small>اضغط تحميل للعرض</small></div></div>
+</div></div>
+<script>
+const $=s=>document.getElementById(s),E=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let D,sha;const api=p=>`https://api.github.com/repos/${$('o').value}/${$('rp').value}/${p}`;
+const H=()=>({Authorization:'Bearer '+$('t').value,Accept:'application/vnd.github+json'});
+const say=m=>$('st').textContent=m;
+const b64=s=>btoa(unescape(encodeURIComponent(s)));
+async function load(){try{say('جاري التحميل...');
+ const r=await fetch(api('contents/data.json'),{headers:H()});if(!r.ok)throw Error('تعذر التحميل: '+r.status);
+ const j=await r.json();sha=j.sha;D=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
+ D.github={owner:$('o').value,repo:$('rp').value};$('app').hidden=false;draw();say('تم التحميل');feedback()}catch(e){say(e.message)}}
+function draw(){$('lt').value=D.latest||'';
+ $('of').innerHTML=D.offers.map((o,i)=>`<div class="it"><label>العنوان</label><input value="${E(o.title)}" oninput="D.offers[${i}].title=this.value">
+ <label>النص</label><textarea rows="2" oninput="D.offers[${i}].text=this.value">${E(o.text)}</textarea>
+ <div class="r"><div><label>ينتهي في (YYYY-MM-DD أو فاضي)</label><input value="${E(o.ends)}" oninput="D.offers[${i}].ends=this.value"></div>
+ <div><label><input type="checkbox" style="width:auto" ${o.active?'checked':''} onchange="D.offers[${i}].active=this.checked"> فعّال</label></div></div>
+ <button class="x" onclick="D.offers.splice(${i},1);draw()">حذف</button></div>`).join('');
+ $('vs').innerHTML=D.versions.map((v,i)=>`<div class="it"><div class="r">
+ <div><label>النسخة</label><input value="${E(v.version)}" oninput="D.versions[${i}].version=this.value"></div>
+ <div><label>التاريخ</label><input value="${E(v.date)}" oninput="D.versions[${i}].date=this.value"></div>
+ <div><label>الحجم</label><input value="${E(v.size)}" oninput="D.versions[${i}].size=this.value"></div></div>
+ <label>رابط التحميل</label><input value="${E(v.url)}" oninput="D.versions[${i}].url=this.value">
+ <label>ملاحظات</label><textarea rows="2" oninput="D.versions[${i}].notes=this.value">${E(v.notes)}</textarea>
+ <button class="x" onclick="D.versions.splice(${i},1);draw()">حذف</button></div>`).join('')}
+function addO(){D.offers.unshift({title:'',text:'',ends:'',active:true});draw()}
+function addV(){D.versions.unshift({version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'',size:''});draw()}
+async function put(path,content64,msg,s){const body={message:msg,content:content64};if(s)body.sha=s;
+ const r=await fetch(api('contents/'+path),{method:'PUT',headers:H(),body:JSON.stringify(body)});if(!r.ok)throw Error('فشل الحفظ: '+r.status);return r.json()}
+async function save(){try{D.latest=$('lt').value;say('جاري الحفظ...');
+ const j=await put('data.json',b64(JSON.stringify(D,null,2)),'Update site data',sha);sha=j.content.sha;say('تم الحفظ. الموقع بيتحدث خلال دقيقة تقريباً.')}catch(e){say(e.message)}}
+async function up(){const f=$('f').files[0];if(!f)return say('اختر ملف أولاً');try{say('جاري الرفع...');
+ const buf=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=8192)s+=String.fromCharCode.apply(null,buf.subarray(i,i+8192));
+ let old;const g=await fetch(api('contents/downloads/'+f.name),{headers:H()});if(g.ok)old=(await g.json()).sha;
+ await put('downloads/'+f.name,btoa(s),'Upload '+f.name,old);
+ D.versions.unshift({version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'downloads/'+f.name,size:(f.size/1048576).toFixed(1)+' MB'});draw();say('تم رفع الملف. عبّي رقم النسخة والملاحظات ثم احفظ.')}catch(e){say(e.message)}}
+async function feedback(){try{const r=await fetch(api('issues?state=all&per_page=50'),{headers:H()});const l=(await r.json()).filter(i=>(i.title||'').startsWith('[رأي]'));
+ $('fbk').innerHTML=l.length?l.map(i=>`<div class="it"><b>${E(i.title)}</b> <small>${i.created_at.slice(0,10)}</small><pre style="white-space:pre-wrap;font:inherit;margin:6px 0">${E(i.body)}</pre><a style="color:#22c8e4" href="${i.html_url}" target="_blank">فتح على GitHub</a></div>`).join(''):'<small>لا توجد آراء بعد</small>'}catch(e){}}
+</script></body></html>
