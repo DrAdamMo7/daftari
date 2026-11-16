@@ -90,15 +90,7 @@
       "active": true
     }
   ],
-  "versions": [
-    {
-      "version": "1.8",
-      "date": "2026-11-16",
-      "notes": "النسخة الحالية من دفتري.",
-      "url": "downloads/daftari-1.8.apk",
-      "size": "0.9 MB"
-    }
-  ],
+  "versions": [],
   "reviews": [],
   "firebase": {}
 }
