@@ -58,5 +58,10 @@ footer h4{margin:0 0 6px;color:var(--gold)}footer p{margin:0}footer a{text-decor
 @keyframes open{to{transform:rotateY(165deg)}}
 @keyframes tilt{0%{transform:rotateX(14deg) rotateY(18deg) scale(.9)}35%{transform:rotateX(6deg) rotateY(-4deg)}100%{transform:rotateX(2deg) rotateY(14deg) translateX(-40px) scale(1.08)}}
 #skip{position:absolute;bottom:28px;background:none;border:1px solid var(--line);color:var(--mute);padding:6px 18px;border-radius:99px;font:inherit;cursor:pointer}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin:0}
+.plat{padding:30px 0;scroll-margin-top:80px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:14px}
+.step{padding:14px 20px 18px 16px}.step img{width:100%;border-radius:12px;display:block;margin-bottom:10px;background:#0c3556}
+.note{color:var(--mute);font-size:.9rem;margin-top:12px}
 @media(max-width:760px){.hero{grid-template-columns:1fr;padding-top:34px}.ph h1{font-size:1.9rem}.brand b{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#intro{display:none}}
