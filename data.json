@@ -93,13 +93,6 @@
     }
   ],
   "versions": [],
-  "reviews": [
-    {
-      "name": "شييس",
-      "rating": 5,
-      "text": "شسيش",
-      "show": true
-    }
-  ],
+  "reviews": [],
   "firebase": {}
 }
