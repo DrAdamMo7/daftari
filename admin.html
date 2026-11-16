@@ -5,66 +5,73 @@
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}
 body{margin:0;font-family:Cairo,Tahoma,sans-serif;background:#06223a;color:#eaf8fc;line-height:1.7}
-.w{max-width:900px;margin:auto;padding:20px}h1{margin:0 0 4px}h2{color:#fbbf24;margin:0 0 10px;font-size:1.2rem}
-.c{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:18px;margin:16px 0}
-input,textarea{font:inherit;color:inherit;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;width:100%;margin:4px 0}
-label{font-size:.85rem;color:#9fc6d4}.r{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 20px;cursor:pointer;background:#22c8e4;color:#02202f;margin:6px 4px 0 0}
+.w{max-width:920px;margin:auto;padding:20px}h1{margin:0 0 4px}h2{color:#fbbf24;margin:0 0 10px;font-size:1.2rem}
+.c{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:18px;margin:14px 0}
+input,textarea{font:inherit;color:inherit;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;width:100%;margin:3px 0}
+input[type=checkbox]{width:auto}label{font-size:.85rem;color:#9fc6d4;display:block;margin-top:6px}
+.r{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:8px 18px;cursor:pointer;background:#22c8e4;color:#02202f;margin:6px 4px 0 0}
 button.x{background:#7a2330;color:#fff}button.g{background:none;border:1px solid rgba(255,255,255,.25);color:#eaf8fc}
-.it{border:1px dashed rgba(255,255,255,.2);border-radius:12px;padding:12px;margin:10px 0}
-#st{position:sticky;top:0;background:#0a3a57;padding:8px 14px;border-radius:10px;min-height:38px}small{color:#9fc6d4}
+.it{border:1px dashed rgba(255,255,255,.2);border-radius:12px;padding:12px;margin:10px 0}.it img{height:90px;border-radius:8px;display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:2px}#st{position:sticky;top:0;z-index:3;background:#0a3a57;padding:8px 14px;border-radius:10px;min-height:38px}small{color:#9fc6d4}
+.bar{position:sticky;bottom:0;background:#06223a;padding:10px 0}
 </style></head><body><div class="w">
-<h1>لوحة تحكم دفتري</h1><small>التعديلات بتنحفظ مباشرة في ملف data.json داخل مستودع GitHub.</small>
+<h1>لوحة تحكم دفتري</h1><small>كل تعديل بينحفظ في ملف data.json داخل مستودع GitHub، والموقع بيتحدث خلال دقيقة تقريباً.</small>
 <div id="st">جاهز</div>
-
 <div class="c"><h2>الاتصال</h2>
-<div class="r"><div><label>اسم المستخدم</label><input id="o"></div><div><label>اسم المستودع</label><input id="rp" value="daftari"></div>
-<div><label>التوكن (Personal Access Token)</label><input id="t" type="password" autocomplete="off"></div></div>
-<small>التوكن بيبقى بمتصفحك فقط خلال الجلسة ولا ينحفظ في الموقع. صلاحية Contents: Read and write على هذا المستودع بس.</small><br>
-<button onclick="load()">تحميل البيانات</button></div>
-
-<div id="app" hidden>
-<div class="c"><h2>العروض</h2><div id="of"></div><button class="g" onclick="addO()">إضافة عرض</button></div>
-<div class="c"><h2>النسخ والتحميلات</h2><label>النسخة الأحدث (رقم)</label><input id="lt"><div id="vs"></div>
-<button class="g" onclick="addV()">إضافة نسخة</button>
-<div class="it"><label>رفع ملف APK جديد (بيروح لمجلد downloads)</label><input type="file" id="f" accept=".apk"><button onclick="up()">رفع الملف</button></div></div>
-<button onclick="save()" style="font-size:1.05rem">حفظ كل التغييرات</button>
-<div class="c"><h2>آراء الزوار</h2><div id="fbk"><small>اضغط تحميل للعرض</small></div></div>
-</div></div>
+<div class="r"><div><label>اسم المستخدم</label><input id="o" value="DrAdamMo7"></div><div><label>اسم المستودع</label><input id="rp" value="daftari"></div>
+<div><label>التوكن</label><input id="t" type="password" autocomplete="off"></div></div>
+<small>التوكن بيبقى بمتصفحك فقط خلال الجلسة.</small><br><button onclick="load()">تحميل البيانات</button></div>
+<div id="app" hidden><div class="tabs" id="tabs"></div><div class="c" id="pane"></div>
+<div class="bar"><button onclick="save()" style="font-size:1.05rem">حفظ كل التغييرات</button></div></div></div>
 <script>
 const $=s=>document.getElementById(s),E=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let D,sha;const api=p=>`https://api.github.com/repos/${$('o').value}/${$('rp').value}/${p}`;
+const T=[['gen','عام'],['feat','المزايا'],['img','الصور'],['off','العروض'],['ver','النسخ'],['acc','الحسابات'],['txt','النصوص'],['rev','الآراء']];
+let D,sha,tab='gen',IS=[],FT='',FR=[];const say=m=>$('st').textContent=m;
+const api=p=>`https://api.github.com/repos/${$('o').value}/${$('rp').value}/${p}`;
 const H=()=>({Authorization:'Bearer '+$('t').value,Accept:'application/vnd.github+json'});
-const say=m=>$('st').textContent=m;
 const b64=s=>btoa(unescape(encodeURIComponent(s)));
-async function load(){try{say('جاري التحميل...');
- const r=await fetch(api('contents/data.json'),{headers:H()});if(!r.ok)throw Error('تعذر التحميل: '+r.status);
+const rd=f=>new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(f)});
+const S=(p,v)=>{const k=p.split('.');let o=D;while(k.length>1)o=o[k.shift()];o[k[0]]=v};
+const F=(p,l,ta)=>{const v=p.split('.').reduce((o,k)=>o?.[k],D)??'';return `<label>${l}</label>`+(ta?`<textarea rows="${ta}" oninput="S('${p}',this.value)">${E(v)}</textarea>`:`<input value="${E(v)}" oninput="S('${p}',this.value)">`)};
+const CK=(p,l,v)=>`<label><input type="checkbox" ${v?'checked':''} onchange="S('${p}',this.checked)"> ${l}</label>`;
+const DEL=(a,i)=>`<button class="x" onclick="D.${a}.splice(${i},1);draw()">حذف</button>`;
+const ADD=(a,o,l)=>`<button class="g" onclick='D.${a}.unshift(${JSON.stringify(o)});draw()'>${l}</button>`;
+const LST=(a,fn)=>D[a].map((x,i)=>`<div class="it">${fn(x,i)}${DEL(a,i)}</div>`).join('');
+function tabs(){$('tabs').innerHTML=T.map(([k,t])=>`<button class="${k==tab?'':'g'}" onclick="tab='${k}';draw()">${t}</button>`).join('')}
+const P={
+gen:()=>`<h2>عام</h2>${F('site.name','اسم التطبيق')}<div class="r"><div>${F('site.tagline1','العنوان - السطر الأول')}</div><div>${F('site.tagline2','العنوان - السطر الثاني')}</div></div>${F('site.subtitle','الوصف',3)}${F('site.hero','صورة الواجهة (مسار الصورة، أو اخترها من تبويب الصور)')}${F('site.boardTitle','عنوان قسم السبورة')}${F('site.boardText','نص قسم السبورة',3)}${F('site.footer','نص أسفل الصفحة',2)}${F('site.rights','نص الحقوق',3)}`,
+feat:()=>`<h2>المزايا</h2>${ADD('features',{title:'',text:''},'إضافة ميزة')}${LST('features',(f,i)=>F(`features.${i}.title`,'العنوان')+F(`features.${i}.text`,'الوصف',2))}`,
+img:()=>`<h2>الصور</h2><div class="it"><label>رفع صور جديدة (بتروح لمجلد assets)</label><input type="file" id="fi" accept="image/*" multiple><button onclick="upImg()">رفع</button></div>${LST('images',(m,i)=>`<img src="${E(m.src)}" alt="">${F(`images.${i}.cap`,'وصف الصورة')}<small>${E(m.src)}</small><br><button class="g" onclick="S('site.hero','${E(m.src)}');say('تم اختيارها صورة للواجهة، احفظ')">صورة الواجهة</button>`)}`,
+off:()=>`<h2>العروض</h2>${ADD('offers',{title:'',text:'',ends:'',active:true},'إضافة عرض')}${LST('offers',(o,i)=>F(`offers.${i}.title`,'العنوان')+F(`offers.${i}.text`,'النص',2)+F(`offers.${i}.ends`,'ينتهي في (YYYY-MM-DD أو فاضي)')+CK(`offers.${i}.active`,'فعّال',o.active))}`,
+ver:()=>`<h2>النسخ والتحميلات</h2>${F('latest','رقم النسخة الأحدث')}${ADD('versions',{version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'',size:''},'إضافة نسخة')}
+<div class="it"><label>رفع APK جديد (بيروح لمجلد downloads)</label><input type="file" id="fa" accept=".apk"><button onclick="upApk()">رفع</button></div>${LST('versions',(v,i)=>`<div class="r"><div>${F(`versions.${i}.version`,'النسخة')}</div><div>${F(`versions.${i}.date`,'التاريخ')}</div><div>${F(`versions.${i}.size`,'الحجم')}</div></div>${F(`versions.${i}.url`,'رابط التحميل')}${F(`versions.${i}.notes`,'ملاحظات',2)}`)}`,
+acc:()=>`<h2>حساباتي</h2><div class="r"><div>${F('owner.name','الاسم')}</div><div>${F('owner.phone','الرقم')}</div><div>${F('owner.instagram','انستغرام (بدون @)')}</div></div>
+<h2 style="margin-top:20px">حسابات دفتري</h2>${ADD('accounts',{label:'',url:'https://'},'إضافة حساب')}${LST('accounts',(a,i)=>F(`accounts.${i}.label`,'الاسم (مثلاً انستغرام)')+F(`accounts.${i}.url`,'الرابط'))}`,
+txt:()=>`<h2>النصوص</h2>${F('site.about','من نحن',5)}${F('site.intro','تعريف بالتطبيق',4)}${F('site.install','ملاحظة التثبيت (صفحة التحميل)',3)}${F('site.privacy','سياسة الخصوصية',8)}${F('site.terms','الشروط والأحكام',8)}<small>كل سطر جديد بيصير فقرة.</small>`,
+rev:()=>fbBlock()+`<h2>الآراء المنشورة (يدوية)</h2>${ADD('reviews',{name:'',rating:5,text:'',show:true},'إضافة رأي يدوياً')}${LST('reviews',(r,i)=>F(`reviews.${i}.name`,'الاسم')+`<label>التقييم (1-5)</label><input type="number" min="1" max="5" value="${r.rating||5}" oninput="S('reviews.${i}.rating',+this.value)">`+F(`reviews.${i}.text`,'الرأي',2)+CK(`reviews.${i}.show`,'ظاهر بالموقع',r.show!==false))}
+<h2 style="margin-top:20px">آراء الزوار القادمة من GitHub</h2><button class="g" onclick="issues()">تحميل الآراء</button><div id="is"></div>`};
+function draw(){tabs();$('pane').innerHTML=P[tab]()}
+async function load(){try{say('جاري التحميل...');const r=await fetch(api('contents/data.json'),{headers:H()});if(!r.ok)throw Error('تعذر التحميل: '+r.status);
  const j=await r.json();sha=j.sha;D=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
- D.github={owner:$('o').value,repo:$('rp').value};$('app').hidden=false;draw();say('تم التحميل');feedback()}catch(e){say(e.message)}}
-function draw(){$('lt').value=D.latest||'';
- $('of').innerHTML=D.offers.map((o,i)=>`<div class="it"><label>العنوان</label><input value="${E(o.title)}" oninput="D.offers[${i}].title=this.value">
- <label>النص</label><textarea rows="2" oninput="D.offers[${i}].text=this.value">${E(o.text)}</textarea>
- <div class="r"><div><label>ينتهي في (YYYY-MM-DD أو فاضي)</label><input value="${E(o.ends)}" oninput="D.offers[${i}].ends=this.value"></div>
- <div><label><input type="checkbox" style="width:auto" ${o.active?'checked':''} onchange="D.offers[${i}].active=this.checked"> فعّال</label></div></div>
- <button class="x" onclick="D.offers.splice(${i},1);draw()">حذف</button></div>`).join('');
- $('vs').innerHTML=D.versions.map((v,i)=>`<div class="it"><div class="r">
- <div><label>النسخة</label><input value="${E(v.version)}" oninput="D.versions[${i}].version=this.value"></div>
- <div><label>التاريخ</label><input value="${E(v.date)}" oninput="D.versions[${i}].date=this.value"></div>
- <div><label>الحجم</label><input value="${E(v.size)}" oninput="D.versions[${i}].size=this.value"></div></div>
- <label>رابط التحميل</label><input value="${E(v.url)}" oninput="D.versions[${i}].url=this.value">
- <label>ملاحظات</label><textarea rows="2" oninput="D.versions[${i}].notes=this.value">${E(v.notes)}</textarea>
- <button class="x" onclick="D.versions.splice(${i},1);draw()">حذف</button></div>`).join('')}
-function addO(){D.offers.unshift({title:'',text:'',ends:'',active:true});draw()}
-function addV(){D.versions.unshift({version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'',size:''});draw()}
-async function put(path,content64,msg,s){const body={message:msg,content:content64};if(s)body.sha=s;
- const r=await fetch(api('contents/'+path),{method:'PUT',headers:H(),body:JSON.stringify(body)});if(!r.ok)throw Error('فشل الحفظ: '+r.status);return r.json()}
-async function save(){try{D.latest=$('lt').value;say('جاري الحفظ...');
- const j=await put('data.json',b64(JSON.stringify(D,null,2)),'Update site data',sha);sha=j.content.sha;say('تم الحفظ. الموقع بيتحدث خلال دقيقة تقريباً.')}catch(e){say(e.message)}}
-async function up(){const f=$('f').files[0];if(!f)return say('اختر ملف أولاً');try{say('جاري الرفع...');
- const buf=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=8192)s+=String.fromCharCode.apply(null,buf.subarray(i,i+8192));
- let old;const g=await fetch(api('contents/downloads/'+f.name),{headers:H()});if(g.ok)old=(await g.json()).sha;
- await put('downloads/'+f.name,btoa(s),'Upload '+f.name,old);
- D.versions.unshift({version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'downloads/'+f.name,size:(f.size/1048576).toFixed(1)+' MB'});draw();say('تم رفع الملف. عبّي رقم النسخة والملاحظات ثم احفظ.')}catch(e){say(e.message)}}
-async function feedback(){try{const r=await fetch(api('issues?state=all&per_page=50'),{headers:H()});const l=(await r.json()).filter(i=>(i.title||'').startsWith('[رأي]'));
- $('fbk').innerHTML=l.length?l.map(i=>`<div class="it"><b>${E(i.title)}</b> <small>${i.created_at.slice(0,10)}</small><pre style="white-space:pre-wrap;font:inherit;margin:6px 0">${E(i.body)}</pre><a style="color:#22c8e4" href="${i.html_url}" target="_blank">فتح على GitHub</a></div>`).join(''):'<small>لا توجد آراء بعد</small>'}catch(e){}}
+ D.github={owner:$('o').value,repo:$('rp').value};D.site=D.site||{};D.owner=D.owner||{};D.firebase=D.firebase||{};['features','images','offers','versions','accounts','reviews'].forEach(k=>D[k]=D[k]||[]);
+ $('app').hidden=false;draw();say('تم التحميل')}catch(e){say(e.message)}}
+async function put(path,c64,msg){let old;const g=await fetch(api('contents/'+path),{headers:H()});if(g.ok)old=(await g.json()).sha;
+ const body={message:msg,content:c64};if(old)body.sha=old;const r=await fetch(api('contents/'+path),{method:'PUT',headers:H(),body:JSON.stringify(body)});if(!r.ok)throw Error('فشل الحفظ: '+r.status);return r.json()}
+async function save(){try{say('جاري الحفظ...');await put('data.json',b64(JSON.stringify(D,null,2)),'Update site data');say('تم الحفظ. الموقع بيتحدث خلال دقيقة تقريباً.')}catch(e){say(e.message)}}
+async function upImg(){const fs=$('fi').files;if(!fs.length)return say('اختر صوراً أولاً');try{for(const f of fs){const n=f.name.replace(/\s+/g,'-');say('جاري رفع '+n);await put('assets/'+n,await rd(f),'Upload '+n);D.images.push({src:'assets/'+n,cap:''})}draw();say('تم الرفع. اكتب الوصف ثم احفظ.')}catch(e){say(e.message)}}
+async function upApk(){const f=$('fa').files[0];if(!f)return say('اختر ملف APK أولاً');try{const n=f.name.replace(/\s+/g,'-');say('جاري الرفع...');await put('downloads/'+n,await rd(f),'Upload '+n);
+ D.versions.unshift({version:'',date:new Date().toISOString().slice(0,10),notes:'',url:'downloads/'+n,size:(f.size/1048576).toFixed(1)+' MB'});draw();say('تم الرفع. عبّي رقم النسخة والملاحظات ثم احفظ.')}catch(e){say(e.message)}}
+function parse(b){b=(b||'').replace(/\r/g,'');const g=k=>((b.match(new RegExp(k+':\\s*(.*)'))||[])[1]||'').trim();const i=b.indexOf('\n\n');return{name:g('الاسم')==='-'?'':g('الاسم'),rating:+((g('التقييم').match(/\d/)||[5])[0])||5,text:i<0?b:b.slice(i).trim()}}
+async function issues(){try{const r=await fetch(api('issues?state=all&per_page=50'),{headers:H()});IS=(await r.json()).filter(i=>(i.title||'').startsWith('[رأي]'));
+ $('is').innerHTML=IS.length?IS.map((i,n)=>{const p=parse(i.body);return `<div class="it"><b>${E(i.title)}</b> <small>${i.created_at.slice(0,10)}</small><p>${E(p.name||'بدون اسم')} - ${p.rating}/5<br>${E(p.text)}</p><button onclick="pub(${n})">نشر في الموقع</button> <a style="color:#22c8e4" href="${i.html_url}" target="_blank">GitHub</a></div>`}).join(''):'<small>لا توجد آراء بعد</small>'}catch(e){say(e.message)}}
+function pub(n){const p=parse(IS[n].body);D.reviews.unshift({name:p.name,rating:p.rating,text:p.text,show:true});say('انضاف للآراء المنشورة، اضغط حفظ كل التغييرات');tab='rev';tabs();$('pane').innerHTML=P.rev();issues()}
+const FS=()=>`https://firestore.googleapis.com/v1/projects/${D.firebase.projectId}/databases/(default)/documents`;
+const fbBlock=()=>`<h2>آراء الزوار (Firebase)</h2><div class="r"><div>${F('firebase.projectId','Project ID')}</div><div>${F('firebase.apiKey','API Key')}</div></div><small>عبّي الحقلين واحفظ، ثم سجّل الدخول بإيميل الأدمن.</small>
+<div class="r"><div><label>إيميل الأدمن</label><input id="fe"></div><div><label>كلمة السر</label><input id="fp" type="password"></div></div><button onclick="fbLogin()">دخول وتحميل الآراء</button><div id="fl">${FR.length?'':''}</div><hr style="opacity:.2;margin:18px 0">`;
+async function fbLogin(){try{const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${D.firebase.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('fe').value,password:$('fp').value,returnSecureToken:true})});const j=await r.json();if(!j.idToken)throw Error('فشل الدخول: '+(j.error&&j.error.message||''));FT=j.idToken;say('تم الدخول');fbList()}catch(e){say(e.message)}}
+async function fbList(){try{const r=await fetch(FS()+'/reviews?pageSize=100',{headers:{Authorization:'Bearer '+FT}});const j=await r.json();if(!r.ok)throw Error('تعذر تحميل الآراء: '+r.status);FR=j.documents||[];fbRender()}catch(e){say(e.message)}}
+function fbRender(){$('fl').innerHTML=FR.length?FR.map(d=>{const f=d.fields||{},id=d.name.split('/').pop(),v=k=>E(f[k]&&(f[k].stringValue??f[k].integerValue)||''),ap=f.approved&&f.approved.booleanValue;return `<div class="it"><b>${v('name')||'بدون اسم'}</b> - ${v('rating')}/5 - <small>${ap?'منشور':'بانتظار المراجعة'}</small><p>${v('text')}</p><button onclick="fbSet('${id}',${!ap})">${ap?'إخفاء':'نشر'}</button><button class="x" onclick="fbDel('${id}')">حذف</button></div>`}).join(''):'<small>لا توجد آراء بعد</small>'}
+async function fbSet(id,a){try{const r=await fetch(`${FS()}/reviews/${id}?updateMask.fieldPaths=approved`,{method:'PATCH',headers:{Authorization:'Bearer '+FT,'Content-Type':'application/json'},body:JSON.stringify({fields:{approved:{booleanValue:a}}})});if(!r.ok)throw Error('فشل: '+r.status);say(a?'تم النشر':'تم الإخفاء');fbList()}catch(e){say(e.message)}}
+async function fbDel(id){if(!confirm('حذف الرأي؟'))return;try{const r=await fetch(`${FS()}/reviews/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+FT}});if(!r.ok)throw Error('فشل: '+r.status);say('تم الحذف');fbList()}catch(e){say(e.message)}}
 </script></body></html>
