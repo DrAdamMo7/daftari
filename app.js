@@ -3,7 +3,7 @@ const $=s=>document.querySelector(s),E=t=>String(t??'').replace(/[&<>"]/g,c=>({'
 const P=t=>String(t||'').split(/\n+/).filter(Boolean).map(p=>`<p>${E(p)}</p>`).join('');
 const U=u=>/^(https?:|tel:|mailto:)/.test(u)?E(u):'#';
 const PG=document.body.dataset.page;
-const NAV=[['index','الرئيسية'],['features','المزايا'],['download','التحميل'],['reviews','الآراء'],['about','من نحن'],['contact','تواصل']];
+const NAV=[['index','الرئيسية'],['features','المزايا'],['students','ملفات الطلاب'],['download','التحميل'],['reviews','الآراء'],['about','من نحن'],['contact','تواصل']];
 const stars=n=>'<span class="st">'+'★'.repeat(n)+'<i>'+'★'.repeat(5-n)+'</i></span>';
 let D,S,L,RV=[];
 const FBC=()=>D.firebase&&D.firebase.projectId&&D.firebase.apiKey?D.firebase:null;
