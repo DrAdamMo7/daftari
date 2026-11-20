@@ -87,13 +87,20 @@
   ],
   "offers": [
     {
-      "title": "إطلاق النسخة 1.9",
+      "title": "إطلاق النسخة 2.4.1",
       "text": "حمّل دفتري الآن مجاناً واكتب فوق ملفاتك بحرية.",
       "ends": "",
       "active": true
     }
   ],
   "versions": [
+    {
+      "version": "",
+      "date": "2026-11-20",
+      "notes": "",
+      "url": "downloads/daftari-2.4.1-signed.apk",
+      "size": "0.9 MB"
+    },
     {
       "version": "2.41",
       "date": "2026-11-20",
