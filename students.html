@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ملفات الطلاب | دفتري</title><meta name="description" content="ارفع ملفاتك وشاركها مع زملائك، مرتبة حسب الصف والمادة.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
+<style>
+.box{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:18px;padding:22px 24px;max-width:640px}
+.box h2{margin:0 0 4px;font-size:1.3rem}
+.box .hint{color:var(--mute);font-size:.88rem;margin:0 0 14px}
+.box label{display:block;font-weight:600;font-size:.92rem;margin-bottom:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+input[type=file]{padding:9px 12px;cursor:pointer}
+input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+select option{background:#0a3a57;color:#eaf8fc}
+.btn[disabled]{opacity:.55;cursor:wait;transform:none}
+.msg{min-height:1.6em;margin:0;font-size:.95rem}.msg.ok{color:#7ee8a6}.msg.err{color:#ffb4a8}
+.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 18px}
+.bar input{flex:2 1 240px;width:auto}.bar select{flex:1 1 160px;width:auto}
+.count{color:var(--mute);font-size:.9rem;margin:0 0 6px}
+.gsec{margin-top:38px}
+.gsec>h2{font-size:1.5rem;margin:0 0 4px;font-weight:800}
+.gsec>h2 span{background:linear-gradient(transparent 62%,rgba(251,191,36,.6) 62%);padding:0 6px}
+.subh{margin:20px 0 10px;color:var(--gold);font-size:1.1rem;font-weight:800}
+.subh small{color:var(--mute);font-weight:400;margin-inline-start:6px}
+.paper .meta{color:#4b6b7a;font-size:.84rem;margin:2px 0 10px}
+.paper .dl{display:inline-block;padding:7px 18px;font-size:.92rem;margin-top:4px}
+.paper h3{overflow-wrap:anywhere}
+.empty{color:var(--mute);padding:30px 0;text-align:center}
+@media(max-width:600px){.row2{grid-template-columns:1fr}}
+</style></head>
+<body data-page="students"><div id="hd"></div>
+<main class="wrap" id="main">
+  <div class="ph">
+    <h1>ملفات <span>الطلاب</span></h1>
+    <p class="lead">ارفع ملفاتك وشاركها مع زملائك، ونزّل ما تحتاجه. الملفات مرتبة حسب الصف ثم المادة.</p>
+  </div>
+
+  <section style="padding-top:10px">
+    <form class="box" id="upForm" autocomplete="off">
+      <h2>ارفع ملفاً</h2>
+      <p class="hint">PDF أو صور (JPG, PNG, WEBP) أو Word. الحد الأقصى 20 ميجا للملف.</p>
+      <div>
+        <label for="title">عنوان الملف</label>
+        <input id="title" maxlength="150" required placeholder="مثال: ملخص الوحدة الثالثة">
+      </div>
+      <div class="row2">
+        <div>
+          <label for="grade">الصف</label>
+          <select id="grade" required><option value="">اختر الصف</option></select>
+        </div>
+        <div>
+          <label for="subject">المادة</label>
+          <input id="subject" maxlength="60" list="subjList" required placeholder="اختر أو اكتب">
+          <datalist id="subjList"></datalist>
+        </div>
+      </div>
+      <div>
+        <label for="uname">اسمك (اختياري)</label>
+        <input id="uname" maxlength="60" placeholder="يظهر مع الملف">
+      </div>
+      <div>
+        <label for="file">الملف</label>
+        <input id="file" type="file" required accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx">
+      </div>
+      <input class="hp" id="website" tabindex="-1" aria-hidden="true" autocomplete="off">
+      <div><button class="btn" id="upBtn" type="submit">رفع الملف</button></div>
+      <p class="msg" id="upMsg" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section>
+    <h2 class="t">كل <span>الملفات</span></h2>
+    <div class="bar" style="margin-top:14px">
+      <input id="q" type="search" placeholder="ابحث بالعنوان أو الاسم" aria-label="بحث">
+      <select id="fgrade" aria-label="تصفية حسب الصف"><option value="">كل الصفوف</option></select>
+      <select id="fsub" aria-label="تصفية حسب المادة"><option value="">كل المواد</option></select>
+    </div>
+    <p class="count" id="count"></p>
+    <div id="list"></div>
+  </section>
+</main>
+<div id="ft"></div><div id="lb"><img alt=""></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  var SUPABASE_URL = 'https://slsrlhvpquenymlpfogc.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable__1-0fjm2iKo-7olJbtY1RQ_e4CroDDe';
+  var BUCKET = 'student-files';
+  var MAX_SIZE = 20 * 1024 * 1024;
+  var GRADES = ['الصف الأول','الصف الثاني','الصف الثالث','الصف الرابع','الصف الخامس','الصف السادس',
+                'الصف السابع','الصف الثامن','الصف التاسع','الصف العاشر','الحادي عشر','الثاني عشر (توجيهي)','جامعي'];
+  var DEFAULT_SUBJECTS = ['اللغة العربية','اللغة الإنجليزية','الرياضيات','العلوم','الفيزياء','الكيمياء','الأحياء',
+                          'التاريخ','الجغرافيا','التربية الإسلامية','الحاسوب'];
+  var UNSORTED = 'غير مصنف';
+  var EXT_MIME = {
+    pdf:'application/pdf', jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp',
+    doc:'application/msword',
+    docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  };
+  var TYPE_LABEL = {pdf:'PDF', jpg:'صورة', jpeg:'صورة', png:'صورة', webp:'صورة', doc:'Word', docx:'Word'};
+
+  var $ = function(id){ return document.getElementById(id); };
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
+  });
+
+  var allFiles = [];
+  var lastUpload = 0;
+
+  function opt(value, text){ var o = document.createElement('option'); o.value = value; o.textContent = text == null ? value : text; return o; }
+  function fmtSize(n){
+    if(!n) return '';
+    if(n < 1024*1024) return Math.max(1, Math.round(n/1024)) + ' ك.ب';
+    return (n/1024/1024).toFixed(1) + ' م.ب';
+  }
+  function fmtDate(s){
+    try{ return new Date(s).toLocaleDateString('ar', {year:'numeric', month:'short', day:'numeric'}); }
+    catch(e){ return ''; }
+  }
+  function extOf(name){
+    var p = String(name).split('.');
+    return p.length > 1 ? p.pop().toLowerCase() : '';
+  }
+  function setMsg(text, cls){
+    var m = $('upMsg'); m.textContent = text || ''; m.className = 'msg' + (cls ? ' ' + cls : '');
+  }
+
+  // قوائم الصف
+  GRADES.forEach(function(g){ $('grade').appendChild(opt(g)); $('fgrade').appendChild(opt(g)); });
+  $('fgrade').appendChild(opt(UNSORTED));
+
+  function buildSubjects(){
+    var set = {};
+    DEFAULT_SUBJECTS.forEach(function(s){ set[s] = 1; });
+    var used = {};
+    allFiles.forEach(function(f){ if(f.subject){ var s = f.subject.trim(); set[s] = 1; used[s] = 1; } });
+    var all = Object.keys(set).sort(function(a,b){ return a.localeCompare(b, 'ar'); });
+    var dl = $('subjList'); dl.textContent = '';
+    all.forEach(function(s){ dl.appendChild(opt(s)); });
+    var sel = $('fsub'), cur = sel.value;
+    sel.textContent = ''; sel.appendChild(opt('', 'كل المواد'));
+    Object.keys(used).sort(function(a,b){ return a.localeCompare(b, 'ar'); }).forEach(function(s){ sel.appendChild(opt(s)); });
+    if(used[cur]) sel.value = cur;
+  }
+
+  function card(f){
+    var c = document.createElement('article'); c.className = 'paper';
+    var h = document.createElement('h3'); h.textContent = f.title; c.appendChild(h);
+    var ext = extOf(f.file_path);
+    var bits = [TYPE_LABEL[ext] || ext.toUpperCase(), fmtSize(f.file_size), fmtDate(f.created_at)];
+    if(f.uploader_name) bits.push('بواسطة ' + f.uploader_name);
+    var m = document.createElement('p'); m.className = 'meta'; m.textContent = bits.filter(Boolean).join(' | '); c.appendChild(m);
+    var url = sb.storage.from(BUCKET).getPublicUrl(f.file_path, { download: f.file_name || true }).data.publicUrl;
+    var a = document.createElement('a'); a.className = 'btn dl'; a.href = url; a.rel = 'noopener'; a.textContent = 'تنزيل';
+    c.appendChild(a);
+    return c;
+  }
+
+  function render(){
+    var q = $('q').value.trim().toLowerCase();
+    var fg = $('fgrade').value, fs = $('fsub').value;
+    var root = $('list'); root.textContent = '';
+
+    var rows = allFiles.filter(function(f){
+      var g = f.grade || UNSORTED, s = (f.subject || '').trim();
+      if(fg && g !== fg) return false;
+      if(fs && s !== fs) return false;
+      if(!q) return true;
+      return [f.title, f.uploader_name, f.file_name].join(' ').toLowerCase().indexOf(q) !== -1;
+    });
+    $('count').textContent = allFiles.length ? ('عدد الملفات: ' + rows.length) : '';
+
+    if(!rows.length){
+      var e = document.createElement('p'); e.className = 'empty';
+      e.textContent = allFiles.length ? 'ما في نتائج. جرّب تغيّر الصف أو المادة.' : 'لا يوجد ملفات بعد. كن أول من يرفع ملفاً.';
+      root.appendChild(e); return;
+    }
+
+    var by = {};
+    rows.forEach(function(f){
+      var g = f.grade || UNSORTED, s = (f.subject || '').trim() || 'أخرى';
+      (by[g] = by[g] || {});
+      (by[g][s] = by[g][s] || []).push(f);
+    });
+    var order = GRADES.concat([UNSORTED]);
+    Object.keys(by).forEach(function(g){ if(order.indexOf(g) === -1) order.push(g); });
+
+    order.forEach(function(g){
+      if(!by[g]) return;
+      var sec = document.createElement('div'); sec.className = 'gsec';
+      var h = document.createElement('h2'); var sp = document.createElement('span'); sp.textContent = g; h.appendChild(sp); sec.appendChild(h);
+      Object.keys(by[g]).sort(function(a,b){ return a.localeCompare(b, 'ar'); }).forEach(function(s){
+        var sh = document.createElement('h3'); sh.className = 'subh'; sh.textContent = s;
+        var sm = document.createElement('small'); sm.textContent = '(' + by[g][s].length + ')'; sh.appendChild(sm);
+        sec.appendChild(sh);
+        var grid = document.createElement('div'); grid.className = 'grid';
+        by[g][s].forEach(function(f){ grid.appendChild(card(f)); });
+        sec.appendChild(grid);
+      });
+      root.appendChild(sec);
+    });
+  }
+
+  async function load(){
+    var res = await sb.from('files').select('*').order('created_at', {ascending:false}).limit(500);
+    if(res.error){
+      $('count').textContent = '';
+      var l = $('list'); l.textContent = '';
+      var e = document.createElement('p'); e.className = 'empty';
+      e.textContent = 'تعذّر تحميل الملفات. حدّث الصفحة وحاول مرة ثانية.';
+      l.appendChild(e); return;
+    }
+    allFiles = res.data || [];
+    buildSubjects(); render();
+  }
+
+  $('q').addEventListener('input', render);
+  $('fgrade').addEventListener('change', render);
+  $('fsub').addEventListener('change', render);
+
+  $('upForm').addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    if($('website').value) return;
+    var btn = $('upBtn');
+    var title = $('title').value.trim();
+    var grade = $('grade').value;
+    var subject = $('subject').value.trim();
+    var uname = $('uname').value.trim();
+    var file = $('file').files[0];
+
+    if(!title || !grade || !subject || !file){ setMsg('عبّي العنوان والصف والمادة واختر ملفاً.', 'err'); return; }
+    var ext = extOf(file.name);
+    if(!EXT_MIME[ext]){ setMsg('نوع الملف غير مسموح. المسموح: PDF وصور وWord.', 'err'); return; }
+    if(file.size > MAX_SIZE){ setMsg('الملف أكبر من 20 ميجا. صغّره وحاول مرة ثانية.', 'err'); return; }
+    if(file.size === 0){ setMsg('الملف فارغ.', 'err'); return; }
+    if(Date.now() - lastUpload < 15000){ setMsg('استنى لحظات قبل رفع ملف ثاني.', 'err'); return; }
+
+    btn.disabled = true; setMsg('جاري الرفع...', '');
+    var path = new Date().getFullYear() + '/' + (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2))) + '.' + ext;
+    try{
+      var up = await sb.storage.from(BUCKET).upload(path, file, { contentType: EXT_MIME[ext], cacheControl: '3600', upsert: false });
+      if(up.error) throw up.error;
+      var ins = await sb.from('files').insert({
+        title: title, grade: grade, subject: subject, file_path: path, file_name: file.name,
+        file_size: file.size, mime_type: EXT_MIME[ext], uploader_name: uname || null
+      });
+      if(ins.error) throw ins.error;
+      lastUpload = Date.now();
+      var keepGrade = grade, keepSubject = subject;
+      $('upForm').reset();
+      $('grade').value = keepGrade; $('subject').value = keepSubject;
+      setMsg('تم رفع الملف.', 'ok');
+      await load();
+    }catch(err){
+      setMsg('تعذّر رفع الملف. تأكد من الاتصال وحاول مرة ثانية.', 'err');
+      if(window.console) console.error(err);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  load();
+})();
+</script>
+<script src="app.js"></script>
+</body></html>
