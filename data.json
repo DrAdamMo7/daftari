@@ -3,7 +3,7 @@
     "owner": "DrAdamMo7",
     "repo": "daftari"
   },
-  "latest": "2",
+  "latest": "2.0",
   "site": {
     "name": "دفتري",
     "tagline1": "اكتب فوق ملفاتك.",
@@ -87,7 +87,7 @@
   ],
   "offers": [
     {
-      "title": "إطلاق النسخة 2.4.1",
+      "title": "إطلاق النسخة 2.0",
       "text": "حمّل دفتري الآن مجاناً واكتب فوق ملفاتك بحرية.",
       "ends": "",
       "active": true
@@ -95,7 +95,7 @@
   ],
   "versions": [
     {
-      "version": "2",
+      "version": "2.5",
       "date": "2026-11-21",
       "notes": "",
       "url": "downloads/daftari-2_4.apk",
