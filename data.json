@@ -3,7 +3,7 @@
     "owner": "DrAdamMo7",
     "repo": "daftari"
   },
-  "latest": "2.4",
+  "latest": "2",
   "site": {
     "name": "دفتري",
     "tagline1": "اكتب فوق ملفاتك.",
@@ -95,7 +95,7 @@
   ],
   "versions": [
     {
-      "version": "2.4",
+      "version": "2",
       "date": "2026-11-21",
       "notes": "",
       "url": "downloads/daftari-2_4.apk",
